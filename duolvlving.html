@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>duolvling</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .date-display {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+        }
+        
+        .goal-container {
+            margin-bottom: 30px;
+        }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .goal-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #34495e;
+        }
+        
+        .remaining {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #16a085;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+        
+        .timer-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .time-display {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .custom-time {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 80px;
+            text-align: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .start {
+            background-color: #2ecc71;
+        }
+        
+        .start:hover {
+            background-color: #27ae60;
+        }
+        
+        .pause {
+            background-color: #f39c12;
+        }
+        
+        .pause:hover {
+            background-color: #d35400;
+        }
+        
+        .reset {
+            background-color: #e74c3c;
+        }
+        
+        .reset:hover {
+            background-color: #c0392b;
+        }
+        
+        .settings-section {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .settings-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .settings-row label {
+            flex: 1;
+        }
+        
+        .settings-row input {
+            width: 100px;
+        }
+
+        .weekly-goals {
+            margin-top: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .weekly-goals h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .day-goal {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .day-goal label {
+            font-weight: bold;
+            width: 100px;
+        }
+
+        .day-goal input {
+            width: 80px;
+        }
+
+        .current-day {
+            background-color: #e8f4fc;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .save-all-button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background-color: #16a085;
+        }
+
+        .save-all-button:hover {
+            background-color: #138a72;
+        }
+
+        .hours-label {
+            margin-left: 5px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weekly Time Goal Tracker</h1>
+        
+        <div class="date-display" id="current-date">
+            Loading current date...
+        </div>
+        
+        <div class="goal-container">
+            <div class="goal-header">
+                <div class="goal-title">Today's Goal:</div>
+                <div class="remaining">
+                    <span id="time-remaining">0</span> minutes left
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+        
+        <div class="timer-container">
+            <div class="time-display" id="timer">00:00:00</div>
+            
+            <div class="preset-buttons">
+                <button class="preset" data-minutes="5">5 min</button>
+                <button class="preset" data-minutes="10">10 min</button>
+                <button class="preset" data-minutes="15">15 min</button>
+                <button class="preset" data-minutes="25">25 min</button>
+                <button class="preset" data-minutes="30">30 min</button>
+                <button class="preset" data-minutes="45">45 min</button>
+                <button class="preset" data-minutes="60">60 min</button>
+                <button class="preset" data-minutes="120">120 min</button>
+            </div>
+            
+            <div class="custom-time">
+                <input type="number" id="custom-minutes" min="1" max="480" placeholder="Minutes">
+                <button id="set-custom">Set Custom Time</button>
+            </div>
+            
+            <div class="control-buttons">
+                <button id="start-button" class="start">Start</button>
+                <button id="pause-button" class="pause" disabled>Pause</button>
+                <button id="reset-button" class="reset" disabled>Reset</button>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h2>Weekly Goals Settings</h2>
+            <div class="weekly-goals">
+                <h3>Daily Time Goals</h3>
+                <div class="day-goal" id="monday-container">
+                    <label for="monday-goal">Monday:</label>
+                    <input type="number" id="monday-goal" min="0" max="1440" value="270">
+                    <span class="hours-label">(4.5 hours)</span>
+                </div>
+                <div class="day-goal" id="tuesday-container">
+                    <label for="tuesday-goal">Tuesday:</label>
+                    <input type="number" id="tuesday-goal" min="0" max="1440" value="270">
+                    <span class="hours-label">(4.5 hours)</span>
+                </div>
+                <div class="day-goal" id="wednesday-container">
+                    <label for="wednesday-goal">Wednesday:</label>
+                    <input type="number" id="wednesday-goal" min="0" max="1440" value="270">
+                    <span class="hours-label">(4.5 hours)</span>
+                </div>
+                <div class="day-goal" id="thursday-container">
+                    <label for="thursday-goal">Thursday:</label>
+                    <input type="number" id="thursday-goal" min="0" max="1440" value="240">
+                    <span class="hours-label">(4 hours)</span>
+                </div>
+                <div class="day-goal" id="friday-container">
+                    <label for="friday-goal">Friday:</label>
+                    <input type="number" id="friday-goal" min="0" max="1440" value="60">
+                    <span class="hours-label">(1 hour)</span>
+                </div>
+                <div class="day-goal" id="saturday-container">
+                    <label for="saturday-goal">Saturday:</label>
+                    <input type="number" id="saturday-goal" min="0" max="1440" value="180">
+                    <span class="hours-label">(3 hours)</span>
+                </div>
+                <div class="day-goal" id="sunday-container">
+                    <label for="sunday-goal">Sunday:</label>
+                    <input type="number" id="sunday-goal" min="0" max="1440" value="120">
+                    <span class="hours-label">(6 hours)</span>
+                </div>
+                <button id="save-all-goals" class="save-all-button">Save All Goals</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("beforeunload", function (event) {
+        event.preventDefault();
+        event.returnValue = ''; // Some browsers require an empty string
+});
+
+
+        // DOM elements
+        const currentDateDisplay = document.getElementById('current-date');
+        const timeRemainingDisplay = document.getElementById('time-remaining');
+        const progressBar = document.getElementById('progress-bar');
+        const timerDisplay = document.getElementById('timer');
+        const presetButtons = document.querySelectorAll('.preset');
+        const customMinutesInput = document.getElementById('custom-minutes');
+        const setCustomButton = document.getElementById('set-custom');
+        const startButton = document.getElementById('start-button');
+        const pauseButton = document.getElementById('pause-button');
+        const resetButton = document.getElementById('reset-button');
+        const saveAllGoalsButton = document.getElementById('save-all-goals');
+
+        // Day of week containers and inputs - UPDATED to match correct day order
+        const dayContainers = {
+            0: document.getElementById('sunday-container'),
+            1: document.getElementById('monday-container'),
+            2: document.getElementById('tuesday-container'),
+            3: document.getElementById('wednesday-container'),
+            4: document.getElementById('thursday-container'),
+            5: document.getElementById('friday-container'),
+            6: document.getElementById('saturday-container')
+        };
+
+        const dayInputs = {
+            0: document.getElementById('sunday-goal'),
+            1: document.getElementById('monday-goal'),
+            2: document.getElementById('tuesday-goal'),
+            3: document.getElementById('wednesday-goal'),
+            4: document.getElementById('thursday-goal'),
+            5: document.getElementById('friday-goal'),
+            6: document.getElementById('saturday-goal')
+        };
+
+        // Default values based on your specifications (in minutes)
+        const defaultWeeklyGoals = {
+            0: 120, // Sunday - 6 hours
+            1: 270, // Monday - 4.5 hours
+            2: 270, // Tuesday - 4.5 hours
+            3: 270, // Wednesday - 4.5 hours
+            4: 240, // Thursday - 4 hours
+            5: 60,  // Friday - 1 hour
+            6: 180  // Saturday - 3 hours
+        };
+
+        // Get the current day immediately when script loads
+        let currentDay = new Date().getDay(); // 0 (Sunday) to 6 (Saturday)
+        let weeklyGoals = JSON.parse(localStorage.getItem('weeklyGoals')) || defaultWeeklyGoals;
+        let dailyGoal = weeklyGoals[currentDay];
+        let remainingTime = 0;
+        let timerDuration = 0; // in seconds
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let isTimerRunning = false;
+        let currentDate = new Date().toDateString();
+        let lastSavedDate = localStorage.getItem('lastSavedDate');
+        
+        // Object to store daily progress
+        let dailyProgress = JSON.parse(localStorage.getItem('dailyProgress')) || {};
+
+        // Initialize the app
+        function initApp() {
+            console.log("Current day is:", currentDay); // Debug
+            console.log("Current date is:", currentDate); // Debug
+            
+            // Load weekly goals from localStorage
+            loadWeeklyGoals();
+            
+            // Update which day is the current day in the UI
+            highlightCurrentDay();
+
+            // Check if it's a new day or we need to load existing progress
+            if (lastSavedDate !== currentDate) {
+                // Reset for a new day
+                remainingTime = dailyGoal;
+                dailyProgress[currentDate] = remainingTime;
+                localStorage.setItem('dailyProgress', JSON.stringify(dailyProgress));
+                localStorage.setItem('lastSavedDate', currentDate);
+            } else {
+                // Load today's progress
+                remainingTime = dailyProgress[currentDate] || dailyGoal;
+            }
+
+            // Update UI
+            updateDateDisplay();
+            updateGoalDisplay();
+            updateTimerDisplay();
+        }
+
+        // Load weekly goals from localStorage
+        function loadWeeklyGoals() {
+            weeklyGoals = JSON.parse(localStorage.getItem('weeklyGoals')) || defaultWeeklyGoals;
+            
+            // Update the daily goal for the current day
+            dailyGoal = weeklyGoals[currentDay];
+            
+            // Update the inputs with the saved values
+            for (let day = 0; day < 7; day++) {
+                dayInputs[day].value = weeklyGoals[day];
+                updateHoursLabel(day);
+            }
+        }
+
+        // Update the hours label next to the input
+        function updateHoursLabel(day) {
+            const minutes = parseInt(dayInputs[day].value);
+            const hours = (minutes / 60).toFixed(1);
+            const label = dayContainers[day].querySelector('.hours-label');
+            label.textContent = `(${hours} hours)`;
+        }
+
+        // Save all weekly goals
+        function saveAllWeeklyGoals() {
+            for (let day = 0; day < 7; day++) {
+                const goalValue = parseInt(dayInputs[day].value);
+                if (goalValue >= 0 && goalValue <= 1440) {
+                    weeklyGoals[day] = goalValue;
+                    updateHoursLabel(day);
+                }
+            }
+            
+            // Update current day's goal if changed
+            dailyGoal = weeklyGoals[currentDay];
+            
+            // Ensure the remaining time is not more than the daily goal
+            if (remainingTime > dailyGoal) {
+                remainingTime = dailyGoal;
+                dailyProgress[currentDate] = remainingTime;
+                localStorage.setItem('dailyProgress', JSON.stringify(dailyProgress));
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('weeklyGoals', JSON.stringify(weeklyGoals));
+            
+            // Update UI
+            updateGoalDisplay();
+            
+            alert('Weekly goals saved successfully!');
+        }
+
+        // Add input event listeners to update hour labels
+        for (let day = 0; day < 7; day++) {
+            dayInputs[day].addEventListener('input', function() {
+                updateHoursLabel(day);
+            });
+        }
+
+        // Highlight the current day in the settings
+        function highlightCurrentDay() {
+            // Remove highlight from all containers first
+            for (let day = 0; day < 7; day++) {
+                dayContainers[day].classList.remove('current-day');
+            }
+            
+            // Add highlight to current day
+            dayContainers[currentDay].classList.add('current-day');
+            console.log("Highlighted day:", currentDay); // Debug
+        }
+
+        // Update the current date display
+        function updateDateDisplay() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateDisplay.textContent = date.toLocaleDateString(undefined, options);
+        }
+
+        // Update the goal and progress displays
+        function updateGoalDisplay() {
+            timeRemainingDisplay.textContent = remainingTime;
+            const progressPercentage = (remainingTime / dailyGoal) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            
+            // Save to localStorage
+            dailyProgress[currentDate] = remainingTime;
+            localStorage.setItem('dailyProgress', JSON.stringify(dailyProgress));
+        }
+
+        // Format the timer display (hours:minutes:seconds)
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Update the timer display
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(timerSeconds);
+        }
+
+        // Set the timer duration
+        function setTimerDuration(minutes) {
+            timerDuration = minutes * 60;
+            timerSeconds = timerDuration;
+            updateTimerDisplay();
+            resetButton.disabled = false;
+        }
+
+        // Start the timer
+        function startTimer() {
+            if (!timerDuration) return;
+            
+            clearInterval(timerInterval);
+            isTimerRunning = true;
+            
+            startButton.disabled = true;
+            pauseButton.disabled = false;
+            
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    // Timer completed
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    
+                    // Subtract the completed time from daily goal
+                    const minutesCompleted = Math.ceil(timerDuration / 60);
+                    remainingTime = Math.max(0, remainingTime - minutesCompleted);
+                    updateGoalDisplay();
+                    
+                    // Reset UI elements
+                    startButton.disabled = false;
+                    pauseButton.disabled = true;
+                    timerDuration = 0;
+                    
+                    // Alert the user
+                    alert(`Timer completed! ${minutesCompleted} minutes deducted from your daily goal.`);
+                }
+            }, 1000);
+        }
+
+        // Pause the timer
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            startButton.disabled = false;
+            pauseButton.disabled = true;
+        }
+
+        // Reset the timer
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = timerDuration;
+            updateTimerDisplay();
+            
+            startButton.disabled = false;
+            pauseButton.disabled = true;
+        }
+
+        // Check for day change
+        function checkDayChange() {
+            const newDate = new Date().toDateString();
+            const newDay = new Date().getDay();
+            
+            if (newDate !== currentDate || newDay !== currentDay) {
+                currentDate = newDate;
+                currentDay = newDay;
+                dailyGoal = weeklyGoals[currentDay];
+                remainingTime = dailyGoal;
+                
+                // Update localStorage
+                localStorage.setItem('lastSavedDate', currentDate);
+                dailyProgress[currentDate] = remainingTime;
+                localStorage.setItem('dailyProgress', JSON.stringify(dailyProgress));
+                
+                // Update UI
+                updateDateDisplay();
+                updateGoalDisplay();
+                highlightCurrentDay();
+                
+                // Alert the user
+                alert('New day detected! Goals have been reset for the day.');
+            }
+        }
+
+        // Event listeners
+        presetButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const minutes = parseInt(button.getAttribute('data-minutes'));
+                setTimerDuration(minutes);
+            });
+        });
+
+        setCustomButton.addEventListener('click', () => {
+            const minutes = parseInt(customMinutesInput.value);
+            if (minutes > 0) {
+                setTimerDuration(minutes);
+            }
+        });
+
+        startButton.addEventListener('click', startTimer);
+        pauseButton.addEventListener('click', pauseTimer);
+        resetButton.addEventListener('click', resetTimer);
+        saveAllGoalsButton.addEventListener('click', saveAllWeeklyGoals);
+
+        // Check for day change every minute
+        setInterval(checkDayChange, 60000);
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force refresh the current day in case the page was loaded from cache
+            currentDay = new Date().getDay();
+            console.log("DOM loaded, current day is:", currentDay); // Debug
+            initApp();
+        });
+
+        // Call initApp immediately too, for cases where DOMContentLoaded already fired
+        initApp();
+    </script>
+</body>
+</html>
